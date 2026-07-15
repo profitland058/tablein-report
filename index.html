@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>테이블인 서비스 분석</title>
+<style>
+/* ============================================================
+   COLOR TOKENS — 인크로스 Deck Design System
+   ============================================================ */
+:root {
+  --color-primary-50:  #EEF3FF;
+  --color-primary-100: #D9E4FF;
+  --color-primary-300: #7FA0F5;
+  --color-primary-500: #1A54EB;
+  --color-primary-600: #1544C4;
+  --color-primary-700: #0F349B;
+
+  --color-white:  #FFFFFF;
+  --color-gray-50:  #F7F9FC;
+  --color-gray-100: #EEF1F6;
+  --color-gray-200: #E2E7EF;
+  --color-gray-300: #D3DAE4;
+  --color-gray-400: #B7C2D6;
+  --color-gray-500: #8992A3;
+  --color-gray-600: #4A5262;
+  --color-gray-900: #0A0B0D;
+
+  --color-success-500: #0A8A4A;
+  --color-success-700: #0A7A42;
+  --color-success-bg:  #E4F5EC;
+  --color-warning-500: #C77700;
+  --color-warning-700: #9A5B00;
+  --color-warning-bg:  #FBF0DD;
+  --color-error-500:   #D42D2D;
+  --color-error-700:   #B21F1F;
+  --color-error-bg:    #FBE4E4;
+  --color-info-500:    #1A54EB;
+  --color-info-bg:     #EAF0FF;
+
+  --color-bg:            var(--color-white);
+  --color-surface:       var(--color-gray-50);
+  --color-sunken:        var(--color-gray-100);
+  --color-border-subtle: var(--color-gray-100);
+  --color-border:        var(--color-gray-200);
+  --color-border-strong: var(--color-gray-300);
+  --color-fg-1:          var(--color-gray-900);
+  --color-fg-2:          var(--color-gray-600);
+  --color-fg-3:          var(--color-gray-500);
+  --color-accent:        var(--color-primary-500);
+  --color-accent-hover:  var(--color-primary-600);
+  --color-accent-press:  var(--color-primary-700);
+  --color-on-accent:     #FFFFFF;
+
+  /* Light default has no dark glow; keep a solid fallback for [data-theme=dark] blocks */
+  --gradient-dark: radial-gradient(150% 120% at 100% 0%, rgba(108,146,255,0.34) 0%, rgba(100,140,255,0.15) 38%, rgba(94,140,255,0.04) 66%, rgba(94,140,255,0) 86%), #1F252F;
+}
+
+[data-theme="dark"] {
+  --color-primary-300: #88A6FF;
+  --color-primary-500: #4B7BFF;
+  --color-primary-600: #6E93FF;
+
+  --color-success-500: #2CC97E;
+  --color-success-bg:  rgba(44,201,126,0.15);
+  --color-warning-500: #F5A623;
+  --color-warning-bg:  rgba(245,166,35,0.15);
+  --color-error-500:   #FF5C5C;
+  --color-error-bg:    rgba(255,92,92,0.15);
+  --color-info-500:    #4B7BFF;
+  --color-info-bg:     rgba(75,123,255,0.18);
+
+  --color-bg:            #1F252F;
+  --color-surface:       #29303B;
+  --color-sunken:        #333B47;
+  --color-border-subtle: #333B47;
+  --color-border:        #414A57;
+  --color-border-strong: #55606F;
+  --color-fg-1:          #FFFFFF;
+  --color-fg-2:          #A9B1BF;
+  --color-fg-3:          #6E7683;
+  --color-accent:        var(--color-primary-500);
+  --color-accent-hover:  var(--color-primary-600);
+  --color-accent-press:  var(--color-primary-300);
+  --color-on-accent:     #FFFFFF;
+
+  --gradient-dark: radial-gradient(150% 120% at 100% 0%, rgba(108,146,255,0.34) 0%, rgba(100,140,255,0.15) 38%, rgba(94,140,255,0.04) 66%, rgba(94,140,255,0) 86%), #1F252F;
+}
+
+/* ============================================================
+   TYPOGRAPHY TOKENS
+   ============================================================ */
+@font-face {
+  font-family: 'Pretendard Variable';
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
+  src: url('https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/woff2/PretendardVariable.woff2') format('woff2-variations');
+}
+:root {
+  --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+  --font-mono: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+  --font-numeric-feature: 'tnum' 1, 'lnum' 1;
+
+  --font-size-display: 46px;
+  --font-size-h1:      34px;
+  --font-size-h2:      26px;
+  --font-size-h3:      20px;
+  --font-size-body:    16px;
+  --font-size-sm:      14px;
+  --font-size-caption: 13px;
+  --font-size-micro:   11px;
+
+  --font-weight-regular:  400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+  --font-weight-bold:     700;
+  --font-weight-heavy:    800;
+
+  --line-tight:   1.12;
+  --line-heading: 1.25;
+  --line-body:    1.55;
+
+  --tracking-display: -0.03em;
+  --tracking-heading: -0.02em;
+  --tracking-body:     0;
+  --tracking-eyebrow:  0.12em;
+}
+
+/* ============================================================
+   SPACING · RADIUS · ELEVATION
+   ============================================================ */
+:root {
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px; --space-14: 56px;
+
+  --radius-sm: 7px; --radius-md: 10px; --radius-lg: 14px; --radius-xl: 18px; --radius-full: 999px;
+
+  --shadow-sm:   0 1px 4px rgba(10,11,13,0.06);
+  --shadow-card: 0 1px 3px rgba(10,11,13,0.08);
+  --shadow-menu: 0 8px 24px rgba(10,11,13,0.12);
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --duration-fast: 120ms; --duration-base: 180ms; --duration-slow: 260ms;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;overflow-x:hidden}
+header{overflow:hidden}
+body{
+  background:var(--color-gray-50);
+  color:var(--color-fg-1);
+  font-family:var(--font-sans);
+  font-feature-settings:'tnum' 1,'lnum' 1;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+a{color:var(--color-accent);text-decoration:none}
+a:hover{color:var(--color-accent-hover)}
+::selection{background:var(--color-primary-100)}
+
+/* nav buttons */
+.nav-btn{
+  appearance:none;border:none;background:none;cursor:pointer;font-family:inherit;
+  font-size:14px;padding:8px 14px 9px;border-radius:10px;
+  transition:color 120ms,background 120ms;color:var(--color-fg-2);font-weight:500;
+}
+.nav-btn:hover{color:var(--color-fg-1)}
+.nav-btn.active{color:var(--color-fg-1);font-weight:600;background:var(--color-sunken)}
+
+/* badge (design-system Badge primitive) */
+.badge{
+  display:inline-flex;align-items:center;font-size:11px;font-weight:700;
+  letter-spacing:0.04em;padding:4px 11px;border-radius:999px;line-height:1;white-space:nowrap;
+}
+.badge.warning{background:var(--color-warning-bg);color:var(--color-warning-700)}
+.badge.info{background:var(--color-info-bg);color:var(--color-primary-700)}
+.badge.neutral{background:var(--color-sunken);color:var(--color-fg-2)}
+
+/* image placeholder slot (stands in for screen captures) */
+.imgslot{
+  width:100%;height:100%;border-radius:10px;
+  border:1px dashed var(--color-border-strong);
+  background:
+    linear-gradient(var(--color-surface),var(--color-surface)) padding-box,
+    repeating-linear-gradient(45deg, rgba(137,146,163,0.05) 0 12px, rgba(137,146,163,0.11) 12px 24px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  text-align:center;color:var(--color-fg-3);padding:24px;
+}
+.imgslot svg{opacity:0.5}
+.imgslot span{font-size:13px;line-height:1.5;max-width:420px;font-weight:500}
+
+[data-reveal]{will-change:opacity,transform}
+
+/* horizontal-scroll wrapper for the wide "at a glance" table on small screens */
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* ---- Responsive (mobile-first overrides of the inline layout) ----
+   Inline styles are overridden here with !important; attribute-substring
+   selectors target the exact inline layouts used in the JS templates. */
+@media (max-width:760px){
+  header{padding-left:16px !important;padding-right:16px !important}
+  header nav{gap:2px !important}
+  .nav-btn{padding:8px 10px 9px;font-size:13px}
+
+  /* page gutters */
+  [style*="max-width:1080px"]{padding-left:20px !important;padding-right:20px !important}
+
+  /* stack the multi-column card grids */
+  [style*="grid-template-columns:repeat(3,1fr)"]{grid-template-columns:1fr !important}
+  [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important}
+  [style*="grid-template-columns:1fr 1.7fr"]{grid-template-columns:1fr !important}
+  [style*="grid-template-columns:140px 1fr"]{grid-template-columns:1fr !important;gap:14px !important}
+
+  /* tighten the journey timeline gutter + drop the summary indent */
+  [style*="grid-template-columns:68px 1fr"]{grid-template-columns:44px 1fr !important}
+  [style*="margin-left:68px"]{margin-left:0 !important}
+
+  /* let priority rows wrap instead of overflowing */
+  [style*="align-items:baseline"]{flex-wrap:wrap}
+
+  /* hero headline sizes */
+  [style*="font-size:56px"]{font-size:34px !important}
+  [style*="font-size:44px"]{font-size:26px !important}
+
+  /* keep the 4-column "at a glance" table tabular via horizontal scroll */
+  .table-scroll .steps-table{min-width:600px}
+}
+
+@media (max-width:560px){
+  /* free up header space: hide the wordmark divider + doc title, keep logo + tabs */
+  .doc-title,.doc-divider{display:none !important}
+}
+.nav-btn .lbl-short{display:none}
+@media (max-width:480px){
+  .nav-btn{padding:7px 8px;font-size:12px}
+  /* keep all three tabs visible: shorten "User Journey" -> "Journey" */
+  .nav-btn .lbl-full{display:none}
+  .nav-btn .lbl-short{display:inline}
+}
+</style>
+</head>
+<body>
+<div id="app" style="min-height:100vh;"></div>
+
+<script>
+/* ============================================================
+   DATA  (verbatim from 테이블인 서비스 분석 v2.dc.html)
+   ============================================================ */
+var FILTER_IMAGE_HEIGHT = 490; // data-props default
+
+var steps = [
+  { num: '1', name: '트렌드 분석', en: 'PLAN',
+    problem: '캠페인 시작 전 시장 흐름과 경쟁사 콘텐츠를 참고해, 캠페인 기획 방향을 잡을 수 있습니다.',
+    blocks: [
+      { label: '기능',
+        func: '유튜브 콘텐츠를 중심으로 광고 모아보기, 트렌드, 채널 랭킹 화면을 제공합니다. 사용자는 최근 광고 콘텐츠와 인기 채널을 확인하며, 캠페인 기획 전 어떤 콘텐츠 유형이 반응을 얻고 있는지 참고할 수 있습니다.',
+        imgId: 'journey-01-trend', imgLabel: '트렌드 분석 / 광고 모아보기 화면 캡처 삽입',
+        caption: '광고 모아보기와 트렌드 화면을 통해 캠페인 시작 전 시장 흐름을 확인할 수 있습니다.',
+        features: [
+          '개별 크리에이터를 탐색하기 전에 시장에서 반응이 있는 콘텐츠 유형을 먼저 확인할 수 있습니다.',
+          '캠페인 기획 초기 단계에서 참고 데이터로 활용하기 좋습니다.',
+          '실제 후보 추천이나 캠페인 운영으로 바로 이어지는 기능보다는, 기획 보조 성격이 강합니다.',
+        ] },
+    ],
+    insight: '크리에이터 탐색 이전에 시장 흐름을 파악할 수 있는 기능은 캠페인 방향 설정의 불확실성을 줄이는 데 도움이 됩니다.' },
+  { num: '2', name: '크리에이터 탐색', en: 'DISCOVER',
+    problem: '캠페인 목적에 맞는 후보를 찾기 위해, 매체별 특성과 성과 기준에 따라 크리에이터를 탐색할 수 있습니다.',
+    blocks: [
+      { label: '기능',
+        func: '테이블인은 인스타그램, 유튜브, X의 크리에이터 검색을 지원합니다. 각 매체에서 성과를 판단하는 기준이 다르다는 점을 반영해, 인스타그램은 도달 수·ER·오디언스 중심으로, 유튜브는 평균 조회수·광고 비중·콘텐츠 주제 적합성 중심으로 목록을 노출합니다.',
+        imgId: 'journey-02-discover', imgLabel: '크리에이터 검색 / 매체별 검색 화면 캡처 삽입',
+        caption: '테이블인은 매체별 성과 판단 기준을 반영해 크리에이터 검색 화면을 구성합니다.',
+        features: [
+          '모든 채널을 같은 기준으로 보지 않고, 매체별 콘텐츠 소비 방식에 맞춰 후보를 검토할 수 있습니다.',
+          '팔로워 수만이 아니라 도달, 참여, 오디언스 기준으로 후보를 좁힐 수 있습니다.',
+          '성과 지표에 익숙한 사용자에게는 유용하지만, 초보 사용자에게는 기준 설정이 부담스러울 수 있습니다.',
+        ],
+        note: 'X 채널은 지원 채널로 확인되지만, Pro 요금제에서 제공되는 기능이라 실제 사용 검증은 제한적입니다.' },
+    ],
+    insight: '인플루언서 마케팅 플랫폼의 탐색 기능은 모든 매체를 같은 기준으로 다루기보다, 채널별 성과 판단 방식의 차이를 반영해야 합니다.' },
+  { num: '3', name: '크리에이터 검색', en: 'SEARCH',
+    problem: '후보 탐색 이후에는 필터 검색과 AI 검색을 통해 조건을 좁히고, 캠페인에 맞는 후보를 더 정밀하게 압축할 수 있어야 합니다.',
+    blocks: [
+      { label: '기능 1 · 필터 검색',
+        func: '테이블인의 인스타그램 필터는 크리에이터 필터와 콘텐츠 지수 필터로 나뉩니다. 크리에이터 필터는 팔로워 규모와 주 타깃 성별·연령대처럼 계정의 기본 조건을 확인하고, 콘텐츠 지수 필터는 평균 좋아요 수, 릴스 조회수, ER, 평균 도달 수처럼 실제 콘텐츠 반응을 확인합니다.',
+        imgId: 'journey-03-filter', imgH: FILTER_IMAGE_HEIGHT + 'px', fit: 'contain', imgLabel: '인스타그램 필터 설정 화면 캡처 삽입',
+        caption: '크리에이터 필터와 콘텐츠 지수 필터를 분리해 타깃 적합성과 콘텐츠 반응 가능성을 함께 검증합니다.',
+        features: [
+          '크리에이터의 규모와 타깃, 콘텐츠 반응을 분리해서 볼 수 있습니다.',
+          '팔로워 수가 많더라도 실제 반응과 시청자 참여도가 낮은 계정을 걸러낼 수 있습니다.',
+          '숫자 입력형 필터가 많아, 콘텐츠 성과 지표 기준에 익숙하지 않은 사용자는 사용 난이도를 느낄 수 있습니다.',
+        ] },
+      { label: '기능 2 · AI 검색',
+        func: '테이블인의 AI 검색은 사용자의 모호한 입력을 그대로 결과로 연결하지 않고, 캠페인 목적과 타깃, 예산, 제품 조건을 질문으로 좁혀갑니다. 최종적으로는 사용자가 설정한 조건을 충족하는 소수의 크리에이터를 추천하는 방식입니다.',
+        imgId: 'journey-03-aisearch', imgLabel: 'AI 검색 대화 화면 캡처 삽입',
+        caption: '테이블인은 AI 검색에서 사용자의 모호한 입력을 캠페인 조건으로 구체화합니다.',
+        features: [
+          '사용자가 전문 마케터처럼 상세 조건을 입력하지 않아도 검색을 시작할 수 있습니다.',
+          'AI가 질문을 통해 조건을 정리해주기 때문에 초기 기획 부담을 줄일 수 있습니다.',
+          '다만 AI가 스스로 방향을 정리해 제공하는 방식이라, 사용자가 직접 여러 선택지를 비교하며 탐색하는 경험은 상대적으로 약할 수 있습니다.',
+        ] },
+    ],
+    insight: '크리에이터 검색 UX는 정밀 필터와 AI 검색이 함께 작동할 때 완성도가 높아집니다. 필터는 사용자가 기준을 직접 설정하게 하고, AI 검색은 사용자가 기준을 명확히 모를 때 조건을 구체화하는 역할을 해야 합니다.' },
+  { num: '4', name: '크리에이터 정보', en: 'EVALUATE',
+    problem: '리스트에서 괜찮아 보이는 후보가 실제 광고 성과를 낼 수 있는지, 상세 지표를 통해 검증해야 합니다.',
+    blocks: [
+      { label: '기능',
+        func: '테이블인은 크리에이터 상세 화면을 계정 인사이트, 광고 분석, 관리이력 탭으로 구성합니다. 계정 인사이트에서는 유효 팔로워 수, 평균 도달 수, ER, 활성도 지수 등을 확인할 수 있고, 광고 분석에서는 광고 게시물의 참여율과 도달률을 비광고 콘텐츠와 비교할 수 있습니다.',
+        imgId: 'journey-05-evaluate', imgLabel: '크리에이터 상세 인사이트 / 광고 분석 화면 캡처 삽입',
+        caption: '테이블인은 크리에이터 상세 화면에서 채널 활성도, 타깃 도달 가능성, 광고 성과 가능성을 함께 확인하게 합니다.',
+        features: [
+          '피드 분위기만 보고 판단하기 어려운 채널 활성도와 성과 가능성을 데이터로 확인할 수 있습니다.',
+          '플랫폼에 등록되지 않은 크리에이터도 채널 분석이 가능하며, 채널 주요 시청자·콘텐츠 구성·시청자 참여 지표를 제공합니다.',
+          '상세 지표는 브랜드 톤 적합성을 직접 보여주기보다, 채널 활성도·타깃 도달 가능성·성과 가능성을 검증하는 데 가깝습니다.',
+        ],
+        note: '일부 광고 댓글 분석 항목은 결과가 없는 상태로 확인되어, 실제 데이터 축적 수준은 추가 확인이 필요합니다.' },
+    ],
+    insight: '인플루언서 마케터는 피드나 콘텐츠 톤만 보고 컨택하지 않습니다. 오디언스, 채널 활성도, 광고 콘텐츠 반응, 비용 효율, 리스크를 함께 검토할 수 있어야 합니다.' },
+  { num: '5', name: '후보 관리', en: 'MANAGE',
+    problem: '여러 후보를 캠페인별로 저장하고 핵심 정보를 비교해, 후보 검토와 내부 공유를 효율화할 수 있습니다.',
+    blocks: [
+      { label: '기능',
+        func: '테이블인은 탐색한 크리에이터를 그룹 단위로 저장하고, 그룹 상세 화면에서 후보들의 평균 지표를 계산합니다. 사용자는 카테고리, 팔로워 수, 원고료 등 주요 정보를 한 화면에서 확인하며 캠페인별 후보 리스트를 관리할 수 있습니다.',
+        imgId: 'journey-06-manage', imgLabel: '그룹 관리 / 그룹 상세 화면 캡처 삽입',
+        caption: '그룹 관리는 탐색한 후보를 캠페인 단위로 정리하고 내부 검토용 후보 리스트를 구성하는 데 유용합니다.',
+        features: [
+          '각 캠페인마다 후보를 한눈에 비교할 수 있어 후보 검토 단계의 효율성이 높습니다.',
+          '팀 단위로 캠페인 후보를 관리하거나 내부 공유용 후보 리스트를 구성하는 데 적합합니다.',
+          '도달수·좋아요 수·활성도·참여율 평균 수치를 계산하여, 현재 후보 조합의 캠페인 목표 달성 가능 여부를 검토하게 합니다.',
+        ] },
+    ],
+    insight: '크리에이터 탐색 이후에는 후보를 저장하고 비교하는 중간 관리 단계가 필요합니다. 후보 관리 기능은 검색 결과를 실제 캠페인 검토와 내부 의사결정으로 연결합니다.' },
+  { num: '6', name: '캠페인 등록 및 운영', en: 'ACTIVATE',
+    problem: '후보 선정 이후에는 크리에이터에게 전달할 PPL 가이드를 작성하고, 크리에이터의 활동이 정상적으로 이루어지고 있는지 점검해야 합니다.',
+    blocks: [
+      { label: '기능 1 · 캠페인 가이드 생성',
+        func: '캠페인 목적, 제품 정보, 콘텐츠 톤을 기반으로 피드·릴스용 AI 활동 가이드를 생성합니다. 생성된 가이드는 내부 검토나 크리에이터 전달용 초안으로 활용할 수 있습니다.',
+        imgId: 'journey-06-guide', imgLabel: 'AI 활동 가이드 생성 화면 캡처 삽입',
+        caption: '테이블인은 제품 정보와 콘텐츠 톤을 기반으로 크리에이터 전달용 활동 가이드를 자동 생성합니다.',
+        features: [
+          '입력 절차가 단순하고 사용 진입 장벽이 낮습니다.',
+          '제품·브랜드 이미지와 콘텐츠 톤 입력으로만 피드·릴스 가이드 초안을 즉시 생성합니다.',
+          '실제 캠페인에 필요한 필수 메시지, 금지 표현, 업로드 조건, 해시태그 등 세부 조건 입력은 지원하지 않아 의도와 다른 결과물이 생성될 수 있습니다.',
+        ] },
+      { label: '기능 2 · 캠페인 등록 및 업로드 모니터링',
+        func: '테이블인은 캠페인 정보를 등록한 뒤, 필수 해시태그를 기준으로 콘텐츠 업로드 여부를 확인할 수 있도록 지원합니다. 캠페인과 채널을 연결하면 콘텐츠 업로드 확인과 성과 집계 흐름으로 이어집니다.',
+        imgId: 'journey-06-register', imgLabel: '캠페인 등록 / 콘텐츠 업로드 자동 감지 화면 캡처 삽입',
+        caption: '테이블인은 필수 해시태그 기반으로 콘텐츠 업로드 여부를 확인해 수동 모니터링 부담을 줄입니다.',
+        features: [
+          '필수 해시태그 기반 업로드 감지는 수동 모니터링 부담을 줄이는 데 유용합니다.',
+          '동일 캠페인에 참여한 크리에이터와 채널별 성과 지표를 같은 기준의 표로 비교할 수 있습니다.',
+          '업로드 감지는 매시 정각 기준으로 진행되는데, 이에 대한 안내가 부족하면 사용자가 측정 오류로 오해할 수 있습니다.',
+        ] },
+    ],
+    insight: '캠페인 운영 단계의 핵심은 사용자가 캠페인 실행 과정에서 발생하는 업무를 플랫폼 밖으로 흩어지게 하지 않는 것입니다. 사용자가 반복적으로 확인해야 하는 과정을 하나의 흐름 안에서 관리할 수 있어야 합니다.' },
+  { num: '7', name: '모니터링 및 성과 분석', en: 'MONITOR',
+    problem: '캠페인 결과를 단순히 확인하는 것을 넘어, 성과를 해석하고 다음 액션까지 판단할 수 있습니다.',
+    blocks: [
+      { label: '기능',
+        func: '테이블인은 콘텐츠 성과 분석 대시보드를 통해 크리에이터·제품군·광고 유형별 성과를 비교하고, 비용 효율과 매출 성과를 함께 분석합니다. 또한 댓글 긍정/부정 비율, 주요 키워드, AI 반응 요약을 제공하고, 운영 액션 보드를 통해 다음 개선 방향까지 제안합니다.',
+        imgId: 'journey-07-monitor', imgH: '680px', imgLabel: '성과 분석 대시보드 / 운영 액션 보드 화면 캡처 삽입',
+        caption: '테이블인은 캠페인 성과를 단순 확인하는 데서 끝내지 않고, 비용 효율·매출 성과·댓글 반응·후속 액션까지 연결합니다.',
+        features: [
+          '콘텐츠 영향력, 매출 기여도, 2차 확산 관점으로 캠페인을 분석하고, 광고 비용에 대한 효율까지 계산합니다.',
+          '크리에이터, 제품군, 광고 유형별 성과를 비교할 수 있어 어떤 요소가 효율적이었는지 판단하기 쉽습니다.',
+          '운영 액션 보드를 통해 성과 확인 이후 재활용, 개선, 후속 조치로 이어질 수 있습니다.',
+          '단순 조회수나 좋아요보다 비용 대비 성과와 다음 액션을 중시하는 마케터에게 적합합니다.',
+        ] },
+    ],
+    insight: '성과 분석은 조회수와 좋아요를 보여주는 것에서 끝나면 부족합니다. 마케터에게 필요한 것은 비용 대비 성과, 재활용 가능 콘텐츠, 개선 액션까지 판단할 수 있는 운영형 분석 UX입니다.' },
+];
+// Maps each journey image block to its screenshot file in assets/.
+var IMG_FILES = {
+  'journey-01-trend':    'trend.png',
+  'journey-02-discover': 'creator-search.png',
+  'journey-03-filter':   'instagram-filter.png',
+  'journey-03-aisearch': 'ai-search.png',
+  'journey-05-evaluate': 'creator-detail.png',
+  'journey-06-manage':   'group-management.png',
+  'journey-06-guide':    'campaign-guide.png',
+  'journey-06-register': 'campaign-monitoring.png',
+  'journey-07-monitor':  'dashboard.png',
+};
+// image height normalization (placeholder fallback box: default 340px, then ×1.3) + filename lookup
+steps.forEach(function(s){ s.blocks.forEach(function(b){
+  if(!b.imgH) b.imgH = '340px';
+  b.imgH = Math.round(parseFloat(b.imgH) * 1.3) + 'px';
+  if(!b.fit) b.fit = 'cover';
+  b.imgFile = IMG_FILES[b.imgId] || (b.imgId + '.png');
+}); });
+
+var summary = [
+  { n: '01', title: '분석형 SaaS', body: '테이블인은 외부 SNS 데이터를 기반으로 협업할 크리에이터를 탐색·검증하는 분석형 플랫폼입니다.' },
+  { n: '02', title: '데이터 기반 후보 검증', body: '오디언스, 도달 수, ER, 광고 성과, 유효 팔로워 수 등 정량 지표를 통해 후보의 실제 성과 가능성을 판단할 수 있습니다.' },
+  { n: '03', title: '운영과 성과까지 연결', body: '후보 그룹 관리, 캠페인 등록, 업로드 자동 감지, 성과 분석 대시보드를 통해 탐색 이후 운영·성과 분석까지 지원합니다.' },
+];
+
+var overviewPoints = [
+  '인스타그램, 유튜브, X 등 주요 SNS 채널의 크리에이터를 검색·분석할 수 있습니다.',
+  '크리에이터 탐색, AI 추천, 데이터 분석, 캠페인 등록, 업로드 모니터링, 성과 리포트를 한 흐름으로 지원합니다.',
+  '후보의 성과 가능성을 데이터로 검증하고, 캠페인 운영과 성과 분석까지 연결하는 도구입니다.',
+];
+
+var homeSteps = [
+  { num: '1', name: '트렌드 분석', en: 'PLAN', func: '광고 모아보기, 트렌드, 채널 랭킹 제공', meaning: '캠페인 기획 전 시장 흐름과 인기 콘텐츠를 참고할 수 있습니다.' },
+  { num: '2', name: '크리에이터 탐색', en: 'DISCOVER', func: '인스타그램·유튜브·X 매체별 검색 제공', meaning: '매체별 성과 판단 기준에 따라 캠페인 목적에 맞는 후보를 탐색할 수 있습니다.' },
+  { num: '3', name: '크리에이터 검색', en: 'SEARCH', func: '정밀 필터 검색, AI 대화형 검색 제공', meaning: '조건을 좁히거나 AI 질문으로 구체화해 후보를 정밀하게 압축할 수 있습니다.' },
+  { num: '4', name: '크리에이터 정보', en: 'EVALUATE', func: '계정 인사이트, 광고 분석, 관리이력 제공', meaning: '후보의 채널 활성도, 타깃 도달 가능성, 광고 성과 가능성을 데이터로 검증할 수 있습니다.' },
+  { num: '5', name: '후보 관리', en: 'MANAGE', func: '후보 그룹 저장, 핵심 정보 비교, 팀 단위 메모 관리', meaning: '여러 후보를 캠페인별로 정리하고 내부 공유용 후보 리스트를 만들 수 있습니다.' },
+  { num: '6', name: '캠페인 등록 및 운영', en: 'ACTIVATE', func: 'AI 활동 가이드 생성, 캠페인 등록, 업로드 자동 감지', meaning: '크리에이터 전달용 가이드를 만들고 콘텐츠 업로드 여부를 수동 확인하지 않아도 됩니다.' },
+  { num: '7', name: '모니터링 및 성과 분석', en: 'MONITOR', func: '성과 대시보드, 비용 효율, 댓글 반응, 액션 보드 제공', meaning: '캠페인 결과를 해석하고 재활용·개선·후속 조치까지 판단할 수 있습니다.' },
+];
+
+var benchmarks = [
+  { num: '1', title: '트렌드 분석',
+    strength: '광고 모아보기, 트렌드, 채널 랭킹을 통해 캠페인 시작 전 시장 흐름과 인기 콘텐츠를 확인하게 합니다.',
+    insight: '크리에이터 검색 이전에 시장 흐름을 파악할 수 있으면, 사용자는 콘텐츠 반응과 경쟁사 사례를 바탕으로 캠페인 방향을 설정할 수 있습니다.' },
+  { num: '2', title: '매체별 탐색 구조',
+    strength: '인스타그램, 유튜브, X 등 매체별로 다른 검색 구조와 필터 기준을 제공합니다. 매체마다 성과를 판단하는 기준이 다르다는 점을 반영한 설계입니다.',
+    insight: '좋은 탐색 UX는 모든 크리에이터를 하나의 기준으로 줄 세우지 않습니다. 채널별 콘텐츠 소비 방식과 성과 판단 기준을 반영해야 실제 캠페인 성과 가능성을 더 정확히 검토할 수 있습니다.' },
+  { num: '3', title: '필터 검색과 AI 검색',
+    strength: '사용자가 직접 기준을 설정하는 정밀 필터와, 모호한 입력을 질문으로 좁혀가는 AI 검색을 함께 제공합니다.',
+    insight: '성과 지표를 잘 아는 사용자는 직접 필터를 조정하고, 조건이 명확하지 않은 사용자는 AI가 검색 기준을 정리해주길 기대합니다. 플랫폼은 두 방식의 사용자를 모두 고려해야 합니다.' },
+  { num: '4', title: '크리에이터 상세 검증',
+    strength: '계정 인사이트, 광고 분석, 관리이력을 통해 크리에이터의 채널 활성도, 타깃 도달 가능성, 광고 성과 가능성을 함께 보여줍니다.',
+    insight: '크리에이터 상세 화면은 단순 프로필이 아니라, 실제 캠페인에 투입해도 되는 후보인지 검증하는 화면이어야 합니다. 피드 분위기만으로는 오디언스, 광고 반응, 성과 안정성을 판단하기 어렵습니다.' },
+  { num: '5', title: '후보 그룹 관리',
+    strength: '탐색한 크리에이터를 그룹 단위로 저장하고, 그룹별 평균 정보를 한 화면에서 확인할 수 있게 합니다.',
+    insight: '크리에이터 탐색 이후에는 그룹의 목표 달성 가능성을 검토하는 중간 관리 단계가 필요합니다. 이는 실제 캠페인 운영을 위한 내부 의사결정으로 연결됩니다.' },
+  { num: '6', title: '캠페인 운영 연결',
+    strength: 'AI 활동 가이드 생성, 캠페인 등록, 필수 해시태그 기반 업로드 확인을 통해 캠페인 운영 흐름을 지원합니다.',
+    insight: '캠페인 진행 상태와 크리에이터 활동 이행 현황까지 플랫폼 안에서 관리할 수 있다면, 운영 흐름은 더 자연스럽고 완성도 있게 이어집니다.' },
+  { num: '7', title: '성과 분석과 후속 액션',
+    strength: '성과 대시보드에서 크리에이터·제품군·광고 유형별 성과를 비교하고, 비용 효율, 매출 성과, 댓글 반응, 운영 액션 보드까지 연결합니다.',
+    insight: '성과 분석은 조회수와 좋아요를 보여주는 것에서 끝나면 부족합니다. 마케터에게 필요한 것은 비용 대비 성과, 재활용 가능 콘텐츠, 개선 액션까지 판단할 수 있는 운영형 분석 UX입니다.' },
+];
+
+var priority = [
+  { tier: '우선 적용', tone: 'warning', horizon: '즉시 · 핵심 공백',
+    items: [
+      { ref: '04', title: '크리에이터 상세 검증', why: '성과 가능성을 판단할 최소 정량 지표 필요' },
+      { ref: '05', title: '후보 그룹 관리', why: '탐색 결과를 캠페인 검토 자산으로 전환' },
+      { ref: '07', title: '성과 분석과 후속 액션', why: '리포트를 결과 확인이 아니라 다음 액션 판단 도구로 확장' },
+    ] },
+  { tier: '중기 검토', tone: 'info', horizon: '단계적 도입',
+    items: [
+      { ref: '03', title: '필터 검색과 AI 검색', why: '직접 조건 설정과 AI 조건 구체화를 함께 지원' },
+      { ref: '06', title: '캠페인 운영 연결', why: '캠페인 진행 상태와 크리에이터 활동 이행 관리 고도화' },
+      { ref: '02', title: '매체별 탐색 구조', why: '채널별 성과 판단 기준을 검색 UX에 반영' },
+    ] },
+  { tier: '선택 적용', tone: 'neutral', horizon: '기획 보조',
+    items: [
+      { ref: '01', title: '트렌드 분석', why: '캠페인 시작 전 시장 흐름과 경쟁사 콘텐츠를 참고하는 보조 기능' },
+    ] },
+];
+
+var conclusion = [
+  { user: '데이터 기반으로 후보를 검토해야 하는 브랜드 마케터', insight: '팔로워 수나 감에 의존하지 않고, 오디언스·도달·참여율·광고 성과를 통해 후보의 실제 성과 가능성을 검증할 수 있어야 합니다.' },
+  { user: '여러 후보를 비교하고 보고해야 하는 광고대행사 실무자', insight: '후보별 핵심 지표와 그룹 관리 기능은 내부 보고와 클라이언트 설득에 필요한 근거를 제공합니다.' },
+  { user: '캠페인 운영을 반복적으로 관리해야 하는 실무자', insight: '캠페인 등록, 콘텐츠 업로드 확인, 성과 집계가 연결되면 수동 확인과 운영 누락을 줄일 수 있습니다.' },
+  { user: '캠페인 결과를 다음 액션으로 연결해야 하는 마케터', insight: '성과 리포트는 단순 결과 확인이 아니라, 비용 효율·매출 기여·댓글 반응·2차 활용·개선 액션까지 연결되어야 합니다.' },
+];
+
+/* ============================================================
+   RENDER HELPERS
+   ============================================================ */
+var IMG_ICON = '<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
+
+function imgSlot(label){
+  return '<div class="imgslot">' + IMG_ICON + '<span>' + label + '</span></div>';
+}
+
+// Clean the placeholder label into an alt suggestion (drops the "…캡처 삽입" hint)
+function imgAlt(label){
+  return label.replace(/\s*캡처\s*삽입$/, '').replace(/\s*삽입$/, '');
+}
+
+function summaryCards(){
+  return summary.map(function(c){
+    return '<div style="background:var(--color-bg);border:1px solid var(--color-border);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:12px;">'
+      + '<div style="font-family:var(--font-mono);font-feature-settings:var(--font-numeric-feature);font-size:13px;font-weight:700;color:var(--color-accent);">' + c.n + '</div>'
+      + '<div style="font-size:16px;font-weight:700;color:var(--color-fg-1);">' + c.title + '</div>'
+      + '<div style="font-size:14px;line-height:var(--line-body);color:var(--color-fg-2);text-wrap:pretty;">' + c.body + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function overviewList(){
+  return overviewPoints.map(function(o){
+    return '<div style="display:flex;gap:12px;align-items:flex-start;">'
+      + '<span style="width:6px;height:6px;border-radius:50%;background:var(--color-accent);margin-top:8px;flex:none;"></span>'
+      + '<span style="font-size:14.5px;line-height:var(--line-body);color:var(--color-fg-2);text-wrap:pretty;">' + o + '</span>'
+      + '</div>';
+  }).join('');
+}
+
+function homeStepRows(){
+  return homeSteps.map(function(s){
+    return '<div style="display:grid;grid-template-columns:40px 1.1fr 2fr 2fr;border-bottom:1px solid var(--color-border-subtle);align-items:start;">'
+      + '<div style="padding:15px 14px;font-family:var(--font-mono);font-feature-settings:var(--font-numeric-feature);font-size:13px;font-weight:700;color:var(--color-accent);">' + s.num + '</div>'
+      + '<div style="padding:15px 16px;">'
+        + '<div style="font-size:13.5px;font-weight:600;color:var(--color-fg-1);">' + s.name + '</div>'
+        + '<div style="font-size:11px;font-weight:700;letter-spacing:var(--tracking-eyebrow);color:var(--color-fg-3);margin-top:3px;">' + s.en + '</div>'
+      + '</div>'
+      + '<div style="padding:15px 16px;font-size:13px;line-height:1.5;color:var(--color-fg-2);text-wrap:pretty;">' + s.func + '</div>'
+      + '<div style="padding:15px 16px;font-size:13px;line-height:1.5;color:var(--color-fg-3);text-wrap:pretty;">' + s.meaning + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function blockFeatures(blk){
+  var out = blk.features.map(function(f){
+    return '<div style="display:flex;gap:12px;align-items:flex-start;">'
+      + '<span style="width:5px;height:5px;border-radius:50%;background:var(--color-accent);margin-top:8px;flex:none;"></span>'
+      + '<span style="font-size:13.5px;line-height:var(--line-body);color:var(--color-fg-2);text-wrap:pretty;">' + f + '</span>'
+      + '</div>';
+  }).join('');
+  if(blk.note){
+    out += '<div style="margin-top:6px;padding-top:12px;border-top:1px dashed var(--color-border);display:flex;gap:12px;align-items:flex-start;">'
+      + '<span style="font-size:10.5px;font-weight:700;letter-spacing:0.04em;color:var(--color-warning-700);white-space:nowrap;flex:none;margin-top:2px;">주의</span>'
+      + '<span style="font-size:13.5px;line-height:var(--line-body);color:var(--color-fg-3);text-wrap:pretty;">' + blk.note + '</span>'
+      + '</div>';
+  }
+  return out;
+}
+
+function journeyBlock(blk){
+  return '<div>'
+    + '<div style="padding:22px 24px;border-left:4px solid var(--color-accent);background:var(--color-info-bg);">'
+      + '<div style="font-size:13px;font-weight:700;color:var(--color-primary-700);margin-bottom:8px;">' + blk.label + '</div>'
+      + '<div style="font-size:16px;line-height:var(--line-body);font-weight:500;color:var(--color-fg-1);text-wrap:pretty;">' + blk.func + '</div>'
+    + '</div>'
+    + '<div style="padding:20px 24px;border-top:1px solid var(--color-border-subtle);">'
+      // IMAGE — real screenshot from assets/<imgFile>. max-width:100% keeps it within the
+      // card; height:auto preserves the aspect ratio. If the file is missing, the img's
+      // onerror handler hides it and reveals the placeholder box that follows (fallback).
+      + '<img src="assets/' + blk.imgFile + '" alt="' + imgAlt(blk.imgLabel) + '"'
+      +   ' style="max-width:100%;height:auto;display:block;border-radius:10px;"'
+      +   ' onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';">'
+      + '<div style="display:none;width:100%;height:' + blk.imgH + ';overflow:hidden;border-radius:10px;">'
+        + imgSlot(blk.imgLabel)
+      + '</div>'
+      + '<div style="margin-top:10px;font-size:12.5px;line-height:1.5;color:var(--color-fg-3);text-wrap:pretty;">' + blk.caption + '</div>'
+    + '</div>'
+    + '<div style="padding:20px 24px 24px;border-top:1px solid var(--color-border-subtle);">'
+      + '<div style="font-size:11px;font-weight:700;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--color-fg-3);margin-bottom:10px;">특징</div>'
+      + '<div style="display:flex;flex-direction:column;gap:8px;">' + blockFeatures(blk) + '</div>'
+    + '</div>'
+  + '</div>';
+}
+
+function journeySteps(){
+  return steps.map(function(s){
+    return '<div data-reveal style="display:grid;grid-template-columns:68px 1fr;gap:0;">'
+      + '<div style="display:flex;flex-direction:column;align-items:center;">'
+        + '<div style="width:44px;height:44px;border-radius:50%;background:var(--color-accent);color:var(--color-on-accent);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-feature-settings:var(--font-numeric-feature);font-size:17px;font-weight:700;flex:none;">' + s.num + '</div>'
+        + '<div style="width:2px;flex:1;background:var(--color-border);min-height:24px;"></div>'
+      + '</div>'
+      + '<div style="padding-bottom:40px;min-width:0;">'
+        + '<div style="font-size:11px;font-weight:700;letter-spacing:var(--tracking-eyebrow);color:var(--color-accent);margin-bottom:4px;">' + s.en + '</div>'
+        + '<h2 style="margin:0 0 18px;font-size:var(--font-size-h2);font-weight:800;letter-spacing:var(--tracking-heading);color:var(--color-fg-1);">' + s.name + '</h2>'
+        + '<div style="background:var(--color-bg);border:1px solid var(--color-border);border-radius:14px;overflow:hidden;">'
+          + '<div style="padding:17px 24px;border-bottom:1px solid var(--color-border-subtle);background:var(--color-surface);">'
+            + '<div style="font-size:11px;font-weight:700;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--color-fg-3);margin-bottom:6px;">ROLE · 사용자 문제 / 역할</div>'
+            + '<div style="font-size:14px;line-height:var(--line-body);color:var(--color-fg-2);text-wrap:pretty;">' + s.problem + '</div>'
+          + '</div>'
+          + s.blocks.map(journeyBlock).join('')
+        + '</div>'
+        + '<div style="margin-top:12px;display:flex;gap:12px;align-items:flex-start;padding:15px 20px;background:var(--color-warning-bg);border-radius:10px;">'
+          + '<span style="font-size:12px;font-weight:700;letter-spacing:0.04em;color:var(--color-warning-700);white-space:nowrap;flex:none;margin-top:1px;">시사점</span>'
+          + '<span style="font-size:14px;line-height:var(--line-body);color:var(--color-fg-1);font-weight:500;text-wrap:pretty;">' + s.insight + '</span>'
+        + '</div>'
+      + '</div>'
+    + '</div>';
+  }).join('');
+}
+
+function benchmarkList(){
+  return benchmarks.map(function(b){
+    return '<div style="background:var(--color-bg);border:1px solid var(--color-border);border-radius:14px;padding:22px 24px;display:grid;grid-template-columns:44px 1fr;gap:20px;align-items:start;">'
+      + '<div style="width:44px;height:44px;border-radius:10px;background:var(--color-accent);color:var(--color-on-accent);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-feature-settings:var(--font-numeric-feature);font-size:18px;font-weight:700;">' + b.num + '</div>'
+      + '<div>'
+        + '<div style="font-size:17px;font-weight:700;color:var(--color-fg-1);margin-bottom:14px;">' + b.title + '</div>'
+        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px 28px;">'
+          + '<div>'
+            + '<div style="font-size:11px;font-weight:700;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--color-fg-3);margin-bottom:6px;">STRENGTH · 테이블인의 강점</div>'
+            + '<div style="font-size:13.5px;line-height:var(--line-body);color:var(--color-fg-2);text-wrap:pretty;">' + b.strength + '</div>'
+          + '</div>'
+          + '<div>'
+            + '<div style="font-size:11px;font-weight:700;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--color-accent);margin-bottom:6px;">INSIGHT · 플랫폼 시사점</div>'
+            + '<div style="font-size:13.5px;line-height:var(--line-body);color:var(--color-fg-1);text-wrap:pretty;">' + b.insight + '</div>'
+          + '</div>'
+        + '</div>'
+      + '</div>'
+    + '</div>';
+  }).join('');
+}
+
+function priorityList(){
+  return priority.map(function(p){
+    var items = p.items.map(function(it){
+      return '<div style="display:flex;gap:12px;align-items:baseline;">'
+        + '<span style="font-family:var(--font-mono);font-feature-settings:var(--font-numeric-feature);font-size:12px;font-weight:700;color:var(--color-accent);border:1px solid var(--color-primary-100);border-radius:7px;padding:1px 7px;flex:none;background:var(--color-info-bg);">#' + it.ref + '</span>'
+        + '<span style="font-size:14px;font-weight:700;color:var(--color-fg-1);flex:none;">' + it.title + '</span>'
+        + '<span style="font-size:13px;color:var(--color-fg-2);text-wrap:pretty;">— ' + it.why + '</span>'
+      + '</div>';
+    }).join('');
+    return '<div style="background:var(--color-bg);border:1px solid var(--color-border);border-radius:14px;padding:20px 24px;display:grid;grid-template-columns:140px 1fr;gap:24px;align-items:center;">'
+      + '<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">'
+        + '<span class="badge ' + p.tone + '">' + p.tier + '</span>'
+        + '<span style="font-size:11.5px;color:var(--color-fg-3);">' + p.horizon + '</span>'
+      + '</div>'
+      + '<div style="display:flex;flex-direction:column;gap:12px;">' + items + '</div>'
+    + '</div>';
+  }).join('');
+}
+
+function conclusionRows(){
+  return conclusion.map(function(c){
+    return '<div style="display:grid;grid-template-columns:1fr 1.7fr;border-bottom:1px solid var(--color-border-subtle);">'
+      + '<div style="padding:19px 24px;font-size:13.5px;line-height:var(--line-body);font-weight:600;color:var(--color-fg-1);background:var(--color-surface);text-wrap:pretty;">' + c.user + '</div>'
+      + '<div style="padding:19px 24px;font-size:13.5px;line-height:var(--line-body);color:var(--color-fg-2);text-wrap:pretty;">' + c.insight + '</div>'
+    + '</div>';
+  }).join('');
+}
+
+/* ============================================================
+   SECTION TEMPLATES
+   ============================================================ */
+function homeSection(){
+  return ''
+  + '<div data-theme="dark" style="background:var(--gradient-dark);">'
+    + '<div style="max-width:1080px;margin:0 auto;padding:88px 32px 64px;">'
+      + '<div style="font-size:15px;font-weight:700;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--color-primary-300);margin-bottom:22px;">TABLE.IN SERVICE RESEARCH</div>'
+      + '<h1 style="margin:0 0 10px;font-size:56px;line-height:var(--line-tight);font-weight:800;letter-spacing:var(--tracking-display);color:var(--color-fg-1);">테이블인 서비스 분석</h1>'
+      + '<div style="width:56px;height:5px;background:var(--color-accent);margin:26px 0;"></div>'
+      + '<p style="margin:0 0 12px;font-size:22px;line-height:var(--line-heading);font-weight:500;color:var(--color-fg-1);letter-spacing:var(--tracking-heading);">AI 기반 인플루언서 마케팅 분석·운영 플랫폼</p>'
+      + '<p style="margin:0;max-width:640px;font-size:16px;line-height:var(--line-body);color:var(--color-fg-2);text-wrap:pretty;">테이블인의 상세 기능을 분석하고 인플루언서 마케팅 플랫폼의 시사점을 도출합니다.</p>'
+    + '</div>'
+  + '</div>'
+
+  + '<div style="max-width:1080px;margin:0 auto;padding:64px 32px 0;">'
+    + '<div data-reveal>'
+      + '<div style="font-size:13px;font-weight:700;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--color-accent);margin-bottom:8px;">KEY TAKEAWAYS</div>'
+      + '<h2 style="margin:0 0 24px;font-size:var(--font-size-h2);font-weight:800;letter-spacing:var(--tracking-heading);color:var(--color-fg-1);">핵심 요약</h2>'
+      + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">' + summaryCards() + '</div>'
+    + '</div>'
+
+    + '<div data-reveal data-theme="dark" style="margin-top:24px;background:var(--gradient-dark);border-radius:18px;padding:32px 36px;">'
+      + '<div style="font-size:13px;font-weight:700;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--color-primary-300);margin-bottom:12px;">ANALYSIS PURPOSE</div>'
+      + '<p style="margin:0;font-size:17px;line-height:var(--line-body);font-weight:500;color:var(--color-fg-1);max-width:820px;text-wrap:pretty;">테이블인은 인플루언서 마케팅의 <strong style="color:var(--color-primary-300);">탐색·검증·운영·분석 과정을 데이터 기반으로 관리</strong>하는 실무형 분석 플랫폼입니다. <br>본 리서치는 테이블인이 어떤 사용자 문제를 해결하고, 어떻게 후보 검증과 캠페인 운영을 지원하는지 분석합니다.</p>'
+    + '</div>'
+  + '</div>'
+
+  + '<div style="max-width:1080px;margin:0 auto;padding:64px 32px 0;">'
+    + '<div data-reveal>'
+      + '<div style="font-size:13px;font-weight:700;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--color-accent);margin-bottom:8px;">SERVICE OVERVIEW</div>'
+      + '<h2 style="margin:0 0 24px;font-size:var(--font-size-h2);font-weight:800;letter-spacing:var(--tracking-heading);color:var(--color-fg-1);">테이블인은 어떤 서비스인가</h2>'
+      + '<div style="background:var(--color-bg);border:1px solid var(--color-border);border-radius:14px;padding:28px 32px;">'
+        + '<p style="margin:0 0 18px;font-size:17px;font-weight:700;color:var(--color-fg-1);letter-spacing:var(--tracking-heading);">테이블인은 AI 기반 인플루언서 마케팅 분석·운영 플랫폼입니다.</p>'
+        + '<div style="display:flex;flex-direction:column;gap:12px;">' + overviewList() + '</div>'
+      + '</div>'
+      + '<div style="margin-top:16px;background:var(--color-info-bg);border-left:4px solid var(--color-accent);border-radius:10px;padding:22px 26px;">'
+        + '<div style="font-size:12px;font-weight:700;letter-spacing:0.04em;color:var(--color-primary-700);margin-bottom:8px;">포지셔닝</div>'
+        + '<p style="margin:0;font-size:15px;line-height:var(--line-body);color:var(--color-fg-1);text-wrap:pretty;">테이블인은 크리에이터를 거래로 연결하는 플랫폼이 아니라, 광고주·대행사 실무자가 어떤 크리에이터가 캠페인에 적합한지 판단할 수 있도록 근거를 제공하는 <strong style="color:var(--color-accent);">분석형 SaaS</strong>입니다.</p>'
+      + '</div>'
+      + '<div style="margin-top:16px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:10px;padding:22px 26px;">'
+        + '<div style="font-size:12px;font-weight:700;letter-spacing:0.04em;color:var(--color-fg-3);margin-bottom:8px;">한 줄 요약</div>'
+        + '<p style="margin:0;font-size:15px;line-height:var(--line-body);color:var(--color-fg-1);font-weight:500;text-wrap:pretty;">테이블인은 "크리에이터를 많이 보여주는 서비스"가 아니라, "캠페인 목적에 맞는 후보를 데이터로 검증하고 운영·성과 분석까지 연결하는 실무형 분석 플랫폼"입니다.</p>'
+      + '</div>'
+    + '</div>'
+  + '</div>'
+
+  + '<div style="max-width:1080px;margin:0 auto;padding:64px 32px 104px;">'
+    + '<div data-reveal>'
+      + '<div style="font-size:13px;font-weight:700;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--color-accent);margin-bottom:8px;">AT A GLANCE</div>'
+      + '<h2 style="margin:0 0 10px;font-size:var(--font-size-h2);font-weight:800;letter-spacing:var(--tracking-heading);color:var(--color-fg-1);">분석 흐름 7단계, 한눈에</h2>'
+      + '<p style="margin:0 0 24px;font-size:14px;color:var(--color-fg-2);">자세한 기능별 분석은 <a href="#" data-nav="journey" style="font-weight:600;">User Journey</a> 탭에서 확인하세요.</p>'
+      + '<div class="table-scroll"><div class="steps-table" style="background:var(--color-bg);border:1px solid var(--color-border);border-radius:14px;overflow:hidden;">'
+        + '<div style="display:grid;grid-template-columns:40px 1.1fr 2fr 2fr;background:var(--color-surface);border-bottom:1px solid var(--color-border);">'
+          + '<div style="padding:12px 14px;"></div>'
+          + '<div style="padding:12px 16px;font-size:12px;font-weight:600;color:var(--color-fg-3);">단계</div>'
+          + '<div style="padding:12px 16px;font-size:12px;font-weight:700;color:var(--color-primary-700);">핵심 기능</div>'
+          + '<div style="padding:12px 16px;font-size:12px;font-weight:600;color:var(--color-fg-3);">역할</div>'
+        + '</div>'
+        + homeStepRows()
+      + '</div></div>'
+      + '<div style="margin-top:16px;background:var(--color-info-bg);border-radius:10px;padding:20px 26px;">'
+        + '<p style="margin:0;font-size:14.5px;line-height:var(--line-body);color:var(--color-fg-1);font-weight:500;text-wrap:pretty;">테이블인의 기능 흐름은 크리에이터 탐색에서 끝나지 않습니다. 기획 참고, 후보 검증, 그룹 관리, 캠페인 운영, 성과 분석과 후속 액션까지 이어지는 <strong style="color:var(--color-accent);">데이터 기반 실무 흐름</strong>을 구성합니다.</p>'
+      + '</div>'
+    + '</div>'
+  + '</div>';
+}
+
+function journeySection(){
+  return ''
+  + '<div data-theme="dark" style="background:var(--gradient-dark);">'
+    + '<div style="max-width:1080px;margin:0 auto;padding:72px 32px 60px;">'
+      + '<div style="font-size:15px;font-weight:700;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--color-primary-300);margin-bottom:18px;">USER JOURNEY</div>'
+      + '<h1 style="margin:0;font-size:44px;line-height:var(--line-tight);font-weight:800;letter-spacing:var(--tracking-display);color:var(--color-fg-1);">인플루언서 마케팅, 7단계 여정</h1>'
+      + '<div style="width:56px;height:5px;background:var(--color-accent);margin:24px 0;"></div>'
+      + '<p style="margin:0;max-width:640px;font-size:16px;line-height:var(--line-body);color:var(--color-fg-2);text-wrap:pretty;">기획부터 성과 분석까지, 테이블인이 인플루언서 마케팅 실무 흐름을 <br>어떻게 데이터 기반으로 지원하는지 단계별로 살펴봅니다.</p>'
+    + '</div>'
+  + '</div>'
+  + '<div style="max-width:1080px;margin:0 auto;padding:56px 32px 104px;position:relative;">'
+    + journeySteps()
+    + '<div data-reveal data-theme="dark" style="margin-left:68px;background:var(--gradient-dark);border-radius:18px;padding:30px 34px;">'
+      + '<p style="margin:0;font-size:17px;line-height:var(--line-body);font-weight:500;color:var(--color-fg-1);text-wrap:pretty;">테이블인은 인플루언서 마케팅의 각 단계를 단절된 기능으로 제공하지 않습니다. 기획 참고, 후보 탐색, 검색 조건 구체화, 데이터 검증, 후보 관리, 캠페인 운영, 성과 분석을 <strong style="color:var(--color-primary-300);">하나의 실무 흐름</strong>으로 연결합니다.</p>'
+    + '</div>'
+  + '</div>';
+}
+
+function insightsSection(){
+  return ''
+  + '<div data-theme="dark" style="background:var(--gradient-dark);">'
+    + '<div style="max-width:1080px;margin:0 auto;padding:72px 32px 60px;">'
+      + '<div style="font-size:15px;font-weight:700;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--color-primary-300);margin-bottom:18px;">INSIGHTS</div>'
+      + '<h1 style="margin:0;font-size:44px;line-height:var(--line-tight);font-weight:800;letter-spacing:var(--tracking-display);color:var(--color-fg-1);">테이블인에서 도출한 플랫폼 인사이트</h1>'
+      + '<div style="width:56px;height:5px;background:var(--color-accent);margin:24px 0;"></div>'
+      + '<p style="margin:0;max-width:640px;font-size:16px;line-height:var(--line-body);color:var(--color-fg-2);text-wrap:pretty;">인플루언서 마케팅 플랫폼이 어떤 방식으로 사용자의 판단과 운영을 지원해야 하는지 <br>단계별 시사점을 정리하고 결론을 도출합니다.</p>'
+    + '</div>'
+  + '</div>'
+
+  + '<div style="max-width:1080px;margin:0 auto;padding:56px 32px 0;">'
+    + '<div data-reveal>'
+      + '<div style="font-size:13px;font-weight:700;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--color-accent);margin-bottom:8px;">KEY INSIGHTS</div>'
+      + '<h2 style="margin:0 0 24px;font-size:var(--font-size-h2);font-weight:800;letter-spacing:var(--tracking-heading);color:var(--color-fg-1);">테이블인 기능에서 얻은 7가지 시사점</h2>'
+      + '<div style="display:flex;flex-direction:column;gap:14px;">' + benchmarkList() + '</div>'
+    + '</div>'
+  + '</div>'
+
+  + '<div style="max-width:1080px;margin:0 auto;padding:64px 32px 0;">'
+    + '<div data-reveal>'
+      + '<div style="font-size:13px;font-weight:700;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--color-accent);margin-bottom:8px;">PRIORITY</div>'
+      + '<h2 style="margin:0 0 24px;font-size:var(--font-size-h2);font-weight:800;letter-spacing:var(--tracking-heading);color:var(--color-fg-1);">검토 우선순위</h2>'
+      + '<div style="display:flex;flex-direction:column;gap:14px;">' + priorityList() + '</div>'
+    + '</div>'
+  + '</div>'
+
+  + '<div style="max-width:1080px;margin:0 auto;padding:64px 32px 104px;">'
+    + '<div data-reveal>'
+      + '<div style="font-size:13px;font-weight:700;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--color-accent);margin-bottom:8px;">KEY GOAL</div>'
+      + '<h2 style="margin:0 0 24px;font-size:var(--font-size-h2);font-weight:800;letter-spacing:var(--tracking-heading);color:var(--color-fg-1);">테이블인의 타깃 사용자와 핵심 목표</h2>'
+      + '<div style="background:var(--color-bg);border:1px solid var(--color-border);border-radius:14px;overflow:hidden;margin-bottom:20px;">'
+        + '<div style="display:grid;grid-template-columns:1fr 1.7fr;background:var(--color-surface);border-bottom:1px solid var(--color-border);">'
+          + '<div style="padding:13px 24px;font-size:12px;font-weight:600;color:var(--color-fg-3);">타깃 사용자</div>'
+          + '<div style="padding:13px 24px;font-size:12px;font-weight:600;color:var(--color-fg-3);">플랫폼 핵심 역할</div>'
+        + '</div>'
+        + conclusionRows()
+      + '</div>'
+      + '<div data-theme="dark" style="background:var(--gradient-dark);border-radius:18px;padding:36px 40px;">'
+        + '<div style="font-size:13px;font-weight:700;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--color-primary-300);margin-bottom:14px;">CONCLUSION</div>'
+        + '<p style="margin:0 0 24px;font-size:19px;line-height:var(--line-body);font-weight:500;color:var(--color-fg-1);max-width:880px;text-wrap:pretty;">테이블인은 단순히 크리에이터를 검색하는 도구를 넘어, <strong style="color:var(--color-primary-300);">후보 검증·운영 관리·성과 해석·후속 액션까지 연결하는 데이터 기반 실무 지원 도구&nbsp;</strong>역할을 추구하는 인플루언서 마케팅 플랫폼입니다.</p>'
+        + '<img src="assets/logo-kor-white.png" alt="인크로스 SK networks" style="height:16px;display:block;opacity:0.85;">'
+      + '</div>'
+    + '</div>'
+  + '</div>';
+}
+
+/* ============================================================
+   SHELL + STATE
+   ============================================================ */
+var VALID_TABS = { home: 1, journey: 1, insights: 1 };
+function tabFromHash(){
+  var h = (window.location.hash || '').replace(/^#/, '');
+  return VALID_TABS[h] ? h : 'home';
+}
+var state = { tab: tabFromHash() }; // deep-link: honor #home / #journey / #insights on load
+var io = null;
+
+function shell(){
+  return ''
+  + '<header style="position:fixed;top:0;left:0;right:0;height:60px;background:rgba(255,255,255,0.94);backdrop-filter:saturate(1.4) blur(8px);-webkit-backdrop-filter:saturate(1.4) blur(8px);border-bottom:1px solid var(--color-border);z-index:30;display:flex;align-items:center;justify-content:space-between;padding:0 32px;">'
+    + '<div style="display:flex;align-items:center;gap:16px;">'
+      + '<img src="assets/logo-kor.png" alt="인크로스 SK networks" style="height:18px;display:block;">'
+      + '<span class="doc-divider" style="width:1px;height:18px;background:var(--color-border);display:inline-block;"></span>'
+      + '<span class="doc-title" style="font-size:14px;font-weight:600;color:var(--color-fg-1);letter-spacing:-0.01em;">테이블인 서비스 분석</span>'
+    + '</div>'
+    + '<nav style="display:flex;align-items:center;gap:4px;">'
+      + '<button class="nav-btn' + (state.tab==='home'?' active':'') + '" data-nav="home">Home</button>'
+      + '<button class="nav-btn' + (state.tab==='journey'?' active':'') + '" data-nav="journey"><span class="lbl-full">User Journey</span><span class="lbl-short">Journey</span></button>'
+      + '<button class="nav-btn' + (state.tab==='insights'?' active':'') + '" data-nav="insights">Insights</button>'
+    + '</nav>'
+  + '</header>'
+  + '<main style="padding-top:60px;">'
+    + '<section data-tab="home" style="display:' + (state.tab==='home'?'block':'none') + ';">' + homeSection() + '</section>'
+    + '<section data-tab="journey" style="display:' + (state.tab==='journey'?'block':'none') + ';">' + journeySection() + '</section>'
+    + '<section data-tab="insights" style="display:' + (state.tab==='insights'?'block':'none') + ';">' + insightsSection() + '</section>'
+  + '</main>';
+}
+
+/* ---- reveal-on-scroll (mirrors the .dc component) ---- */
+function setupReveal(){
+  if(!io) return;
+  document.querySelectorAll('[data-reveal]').forEach(function(el){
+    if(el.dataset.revealDone === '1') return;
+    var rect = el.getBoundingClientRect();
+    if(rect.width === 0 && rect.height === 0) return; // hidden tab
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 260ms cubic-bezier(0.2,0,0,1), transform 260ms cubic-bezier(0.2,0,0,1)';
+    io.observe(el);
+  });
+}
+
+// Update the DOM to reflect the active tab (no rebuild — keeps reveal state)
+function applyTab(tab){
+  if(!VALID_TABS[tab]) tab = 'home';
+  state.tab = tab;
+  document.querySelectorAll('[data-tab]').forEach(function(sec){
+    sec.style.display = sec.getAttribute('data-tab') === tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('.nav-btn').forEach(function(btn){
+    var active = btn.getAttribute('data-nav') === tab;
+    btn.classList.toggle('active', active);
+    if(active) btn.setAttribute('aria-current', 'page'); else btn.removeAttribute('aria-current');
+  });
+  window.scrollTo({ top: 0, behavior: 'auto' });
+  requestAnimationFrame(function(){
+    document.querySelectorAll('[data-reveal]').forEach(function(el){
+      if(el.dataset.revealDone === '1') return;
+      if(io) io.unobserve(el);
+      var r = el.getBoundingClientRect();
+      if(r.width > 0 && r.top < window.innerHeight){
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+        el.dataset.revealDone = '1';
+      }
+    });
+    setupReveal();
+  });
+}
+
+// Navigate via the URL hash; the hashchange handler performs the DOM update,
+// so back/forward and pasted #journey links stay in sync.
+function switchTab(tab){
+  if(!VALID_TABS[tab]) tab = 'home';
+  if(('#' + tab) === window.location.hash){ applyTab(tab); return; }
+  window.location.hash = tab;
+}
+
+function mount(){
+  document.getElementById('app').innerHTML = shell();
+  document.addEventListener('click', function(e){
+    var t = e.target.closest('[data-nav]');
+    if(t){ e.preventDefault(); switchTab(t.getAttribute('data-nav')); }
+  });
+  io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        var el = e.target;
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+        el.dataset.revealDone = '1';
+        io.unobserve(el);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+  window.addEventListener('hashchange', function(){ applyTab(tabFromHash()); });
+  requestAnimationFrame(setupReveal);
+}
+
+mount();
+</script>
+</body>
+</html>
